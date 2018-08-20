@@ -41,6 +41,16 @@ defmodule FacebookTest do
       end
     end
 
+    test "custom secret", %{id: id, access_token: access_token} do
+      with_mock :hackney, GraphMock.mock_options(
+        fn(_) -> GraphMock.me(:success) end
+      ) do
+        assert {:ok, user} = Facebook.me("id,first_name", access_token, [app_secret: "xxx-xxx"])
+        assert(user["id"] == id)
+        assert(String.length(user["first_name"]) > 0)
+      end
+    end
+
     test "error", %{invalid_access_token: invalid_access_token} do
       with_mock :hackney, GraphMock.mock_options(
         fn(_) -> GraphMock.error() end
@@ -87,7 +97,8 @@ defmodule FacebookTest do
         {:ok, %{"data" => picture_data}} = Facebook.picture(
           id,
           "small",
-          access_token
+          access_token,
+          []
         )
 
         assert(String.length(picture_data["url"]) > 0)
@@ -102,7 +113,8 @@ defmodule FacebookTest do
           id,
           320,
           320,
-          access_token
+          access_token,
+          []
         )
 
         assert(String.length(picture_data["url"]) > 0)
@@ -113,7 +125,7 @@ defmodule FacebookTest do
       with_mock :hackney, GraphMock.mock_options(
         fn(_) -> GraphMock.error() end
       ) do
-        assert {:error, _} = Facebook.picture(id, "small", invalid_access_token)
+        assert {:error, _} = Facebook.picture(id, "small", invalid_access_token, [])
       end
     end
 
@@ -121,7 +133,7 @@ defmodule FacebookTest do
       with_mock :hackney, GraphMock.mock_options(
         fn(_) -> GraphMock.error() end
       ) do
-        assert {:error, _} = Facebook.picture(id, 320, 320, invalid_access_token)
+        assert {:error, _} = Facebook.picture(id, 320, 320, invalid_access_token, [])
       end
     end
   end
@@ -166,7 +178,8 @@ defmodule FacebookTest do
           id,
           file_path,
           [],
-          access_token
+          access_token,
+          []
         )
       end
     end
@@ -181,7 +194,8 @@ defmodule FacebookTest do
           id,
           file_path,
           [],
-          invalid_access_token
+          invalid_access_token,
+          []
         )
       end
     end
@@ -196,7 +210,8 @@ defmodule FacebookTest do
           id,
           file_path,
           [],
-          access_token
+          access_token,
+          []
         )
         assert(String.length(response["id"]) > 0)
       end
@@ -212,7 +227,8 @@ defmodule FacebookTest do
           id,
           file_path,
           [],
-          invalid_access_token
+          invalid_access_token,
+          []
         )
       end
     end
@@ -457,7 +473,8 @@ defmodule FacebookTest do
         assert {:ok, 10} = Facebook.object_count(
           :likes,
           "1326382730725053_1326476257382367",
-          access_token
+          access_token,
+          []
         )
       end
     end

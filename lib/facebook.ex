@@ -159,15 +159,17 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/
   """
-  @spec me(fields :: String.t, access_token) :: resp
-  def me(fields, access_token) when is_binary(fields) do
-    me([fields: fields], access_token)
+  def me(fields, access_token, opt \\ [])
+
+  @spec me(fields :: String.t, access_token, Keyword.t()) :: resp
+  def me(fields, access_token, opt) when is_binary(fields) do
+    me([fields: fields], access_token, opt)
   end
 
-  @spec me(fields, access_token) :: resp
-  def me(fields, access_token) do
+  @spec me(fields, access_token, Keyword.t()) :: resp
+  def me(fields, access_token, opt) do
     params = fields
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/me)
@@ -184,10 +186,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/accounts
   """
-  @spec my_accounts(access_token) :: resp
-  def my_accounts(access_token) do
+  @spec my_accounts(access_token, Keyword.t()) :: resp
+  def my_accounts(access_token, opt \\ []) do
     params = []
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/me/accounts)
@@ -222,10 +224,12 @@ defmodule Facebook do
       iex> Facebook.publish(:campaigns, "act_1234546", [objective: "LINK_CLICKS", name: "a campaign"], "<Access Token>")
       {:ok, %{"id" => "{campaign_id}"}}
   """
-  @spec publish(edge :: atom(), parent_id :: String.t, params, access_token) :: resp
-  def publish(edge, parent_id, params, access_token) do
+  def publish(edge, parent_id, params, access_token, opt \\ [])
+
+  @spec publish(edge :: atom(), parent_id :: String.t, params, access_token, Keyword.t()) :: resp
+  def publish(edge, parent_id, params, access_token, opt) do
     params = params
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{parent_id}/#{edge})
@@ -248,8 +252,8 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/pages/publishing#fotos_videos
   """
-  @spec publish(:photo, page_id, file_path, params, access_token) :: resp
-  def publish(:photo, page_id, file_path, params, access_token) do
+  @spec publish(:photo, page_id, file_path, params, access_token, Keyword.t()) :: resp
+  def publish(:photo, page_id, file_path, params, access_token, _opt) do
     params = params
                |> add_access_token(access_token)
     payload = media_payload(file_path)
@@ -265,10 +269,11 @@ defmodule Facebook do
     file_path,
     params,
     access_token,
-    options :: list
+    options :: list,
+    Keyword.t()
   ) :: resp
   # credo:disable-for-next-line Credo.Check.Refactor.FunctionArity
-  def publish(:video, page_id, file_path, params, access_token, options \\ []) do
+  def publish(:video, page_id, file_path, params, access_token, options, _opt \\ []) do
     params = params
                |> add_access_token(access_token)
     options = options ++ [params: params]
@@ -307,10 +312,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/picture/
   """
-  @spec picture(page_id, type :: String.t, access_token) :: resp
-  def picture(page_id, type, access_token) do
+  @spec picture(page_id, type :: String.t, access_token, Keyword.t()) :: resp
+  def picture(page_id, type, access_token, opt) do
     params = [type: type, redirect: false]
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{page_id}/picture)
@@ -327,10 +332,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/picture/
   """
-  @spec picture(page_id, width :: integer, height :: integer, access_token) :: resp
-  def picture(page_id, width, height, access_token) do
+  @spec picture(page_id, width :: integer, height :: integer, access_token, Keyword.t()) :: resp
+  def picture(page_id, width, height, access_token, opt) do
     params = [width: width, height: height, redirect: false]
-             |> add_app_secret(access_token)
+             |> add_app_secret(access_token, opt)
              |> add_access_token(access_token)
 
     ~s(/#{page_id}/picture)
@@ -347,10 +352,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/likes
   """
-  @spec my_likes(access_token) :: resp
-  def my_likes(access_token) do
+  @spec my_likes(access_token, Keyword.t()) :: resp
+  def my_likes(access_token, opt \\ []) do
     params = []
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/me/likes)
@@ -367,10 +372,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/user/permissions
   """
-  @spec permissions(page_id, access_token) :: resp
-  def permissions(page_id, access_token) do
+  @spec permissions(page_id, access_token, Keyword.t()) :: resp
+  def permissions(page_id, access_token, opt \\ []) do
     params = []
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{page_id}/permissions)
@@ -399,7 +404,7 @@ defmodule Facebook do
       iex> Facebook.get_object("1234567", "<Access Token>")
       {:ok, %{"id" => id}}
   """
-  @spec get_object(object_id :: String.t, access_token) :: resp
+  @spec get_object(object_id :: String.t, access_token, Keyword.t()) :: resp
   def get_object(object_id, access_token) do
     get_object(object_id, access_token, [])
   end
@@ -413,10 +418,10 @@ defmodule Facebook do
 
   See: https://developers.facebook.com/docs/graph-api/reference/page
   """
-  @spec get_object(object_id, access_token, params) :: resp
-  def get_object(object_id, access_token, params) do
+  @spec get_object(object_id, access_token, params, Keyword.t()) :: resp
+  def get_object(object_id, access_token, params, opt \\ []) do
     params = params
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{object_id})
@@ -434,10 +439,10 @@ defmodule Facebook do
 
   """
   # credo:disable-for-lines:1 Credo.Check.Readability.MaxLineLength
-  @spec get_object_edge(edge :: atom | String.t, object_id :: String.t, access_token, params) :: resp
-  def get_object_edge(edge, object_id, access_token, params \\ []) do
+  @spec get_object_edge(edge :: atom | String.t, object_id :: String.t, access_token, params, Keyword.t()) :: resp
+  def get_object_edge(edge, object_id, access_token, params \\ [], opt \\ []) do
     params = params
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{object_id}/#{edge})
@@ -527,10 +532,10 @@ defmodule Facebook do
     * https://developers.facebook.com/docs/graph-api/reference/object/likes
     * https://developers.facebook.com/docs/graph-api/reference/object/comments
   """
-  @spec object_count(scope, object_id, access_token) :: num_resp
-  def object_count(scope, object_id, access_token) when is_atom(scope) do
+  @spec object_count(scope, object_id, access_token, Keyword.t()) :: num_resp
+  def object_count(scope, object_id, access_token, opt) when is_atom(scope) do
     params = [summary: true]
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     scp = scope
@@ -565,14 +570,14 @@ defmodule Facebook do
       )
       {:ok, 100}
   """
-  @spec object_count(reaction, react_type, object_id, access_token) :: num_resp
-  def object_count(:reaction, react_type, object_id, access_token) when is_atom(react_type) do
+  @spec object_count(reaction, react_type, object_id, access_token, Keyword.t()) :: num_resp
+  def object_count(:reaction, react_type, object_id, access_token, opt) when is_atom(react_type) do
     type = react_type
              |> Atom.to_string
              |> String.upcase
 
     params = [type: type, summary: "total_count"]
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{object_id}/reactions)
@@ -589,8 +594,8 @@ defmodule Facebook do
       iex> Facebook.object_count_all("769860109692136_1173416799336463", "<Access Token>")
       {:ok, %{"angry" => 0, "haha" => 1, "like" => 0, "love" => 0, "sad" => 0, "wow" => 0}}
   """
-  @spec object_count_all(object_id, access_token) :: resp
-  def object_count_all(object_id, access_token) do
+  @spec object_count_all(object_id, access_token, Keyword.t()) :: resp
+  def object_count_all(object_id, access_token, opt \\ []) do
     graph_query = """
     reactions.type(LIKE).summary(total_count).limit(0).as(like),
     reactions.type(LOVE).summary(total_count).limit(0).as(love),
@@ -601,7 +606,7 @@ defmodule Facebook do
     """
 
     params = [fields: graph_query]
-               |> add_app_secret(access_token)
+               |> add_app_secret(access_token, opt)
                |> add_access_token(access_token)
 
     ~s(/#{object_id})
@@ -804,12 +809,12 @@ defmodule Facebook do
   Decodes a signed request from a client SDK (in-app payments), verifies the
   signature and (if it is valid) returns its decoded contents.
   """
-  @spec decode_signed_request(signed_request) :: resp
-  def decode_signed_request(signed_request) do
+  @spec decode_signed_request(signed_request, Keyword.t()) :: resp
+  def decode_signed_request(signed_request, opt \\ []) do
     with [signature_str | [payload_str | _]]
            <- String.split(signed_request, "."),
          {:ok, signature} <- Base.url_decode64(signature_str),
-         _signature_verification = ^signature <- signature(payload_str),
+         _signature_verification = ^signature <- signature(payload_str, opt),
          {:ok, payload} <- Base.url_decode64(payload_str),
          {:ok, payload} <- JSON.decode(payload)
     do
@@ -820,9 +825,9 @@ defmodule Facebook do
   end
 
   # Builds a signature just like Facebook does for its signed_requests.
-  def sign(payload) do
+  def sign(payload, opt \\ []) do
     payload_str = Base.url_encode64(payload)
-    "#{signature_base64(payload_str)}.#{payload_str}"
+    "#{signature_base64(payload_str, opt)}.#{payload_str}"
   end
 
   # Request access token and extract the access token from the access token
@@ -865,29 +870,32 @@ defmodule Facebook do
       |> (& {:ok, &1}).()
   end
 
+  defp fetch_app_secret(app_secret: app_secret) when is_bitstring(app_secret), do: app_secret
+  defp fetch_app_secret(_), do: Config.app_secret()
+
   # Hashes the token together with the app secret according to the
   # guidelines of facebook to build an unencoded/raw signature.
-  defp signature(str) do
-    :crypto.hmac(:sha256, Config.app_secret(), str)
+  defp signature(str, opt) do
+    :crypto.hmac(:sha256, fetch_app_secret(opt), str)
   end
 
   # Uses signature/1 to build a urlsafe base64-encoded signature
-  defp signature_base64(str) do
-    str |> signature() |> Base.url_encode64()
+  defp signature_base64(str, opt) do
+    str |> signature(opt) |> Base.url_encode64()
   end
 
   # Uses signature/1 to build a lowercase base16-encoded signature
-  defp signature_base16(str) do
-    str |> signature() |> Base.encode16(case: :lower)
+  defp signature_base16(str, opt) do
+    str |> signature(opt) |> Base.encode16(case: :lower)
   end
 
   # Add the appsecret_proof to the GraphAPI request params if the app secret is
   # defined
-  defp add_app_secret(params, access_token) do
-    if is_nil(Config.app_secret()) do
+  defp add_app_secret(params, access_token, opt) do
+    if is_nil(fetch_app_secret(opt)) do
       params
     else
-      params ++ [appsecret_proof: signature_base16(access_token)]
+      params ++ [appsecret_proof: signature_base16(access_token, opt)]
     end
   end
 
