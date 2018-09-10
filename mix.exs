@@ -67,7 +67,7 @@ defmodule Facebook.Mixfile do
 
   defp aliases do
     [
-      "quality": [
+      quality: [
         "test",
         "credo --strict"
       ]
